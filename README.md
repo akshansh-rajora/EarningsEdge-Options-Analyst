@@ -1,6 +1,6 @@
 # EarningsEdge — Options Analyst
 
-Options analyst web app powered by historical CSV data (2013-2022). This tool helps options traders make better earnings plays by analyzing historical price data and volatility metrics.
+Options analyst web app powered by historical CSV data (2013-2022). This tool helps options traders make better earnings plays by analyzing historical price data and volatility metrics (https://earnings-edge-options-analyst.vercel.app).
 
 ## Features
 
