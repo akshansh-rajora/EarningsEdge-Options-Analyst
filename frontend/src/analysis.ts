@@ -92,9 +92,6 @@ export async function analyzeTicker(ticker: string): Promise<any> {
   const dayChangePct = prevDataPoint 
     ? ((currentPrice - prevDataPoint.price) / prevDataPoint.price) * 100 
     : 0;
-  const lastBarDate = lastDataPoint.date;
-  const high52w = closes.length > 0 ? Math.max(...closes) : 0;
-  const low52w = closes.length > 0 ? Math.min(...closes) : 0;
 
   const companyName = companyInfo[t]?.name || t;
   const sector = companyInfo[t]?.sector || "Unknown";
