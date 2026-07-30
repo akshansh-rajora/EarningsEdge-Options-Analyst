@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { analyzeTicker, AVAILABLE_TICKERS_LIST } from "./analysis";
 
 const VERDICT_STYLES: Record<string, { bg: string; accent: string; icon: string }> = {
   "STRONG BUY STRADDLE": { bg: "#0F1F1A", accent: "#22C55E", icon: "↑↑" },
@@ -9,8 +10,6 @@ const VERDICT_STYLES: Record<string, { bg: string; accent: string; icon: string 
   "AVOID":               { bg: "#240A0A", accent: "#F87171", icon: "✕"  },
   "NEUTRAL":             { bg: "#1A1226", accent: "#A78BFA", icon: "—"  },
 };
-
-const AVAILABLE_TICKERS = ["AAPL", "DIS", "FMC", "KO", "ORA"];
 
 type AnalysisResult = {
   ticker: string;
@@ -97,14 +96,8 @@ export default function App() {
   async function runAnalysis(t: string) {
     startLoading(t);
     try {
-      const res = await fetch(`/api/analyse`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker: t }),
-      });
-      const data = await res.json() as AnalysisResult & { error?: string };
+      const data = await analyzeTicker(t) as AnalysisResult;
       clearTimers();
-      if (!res.ok || data.error) throw new Error(data.error ?? "Unknown error");
       setTimeout(() => {
         setResult(data);
         setView("result");
@@ -134,8 +127,8 @@ export default function App() {
   function handleStart() {
     const t = ticker.trim().toUpperCase();
     if (!t) return;
-    if (!AVAILABLE_TICKERS.includes(t)) {
-      setErrorMsg(`Ticker ${t} is not available. Available: ${AVAILABLE_TICKERS.join(', ')}`);
+    if (!AVAILABLE_TICKERS_LIST.includes(t)) {
+      setErrorMsg(`Ticker ${t} is not available. Available: ${AVAILABLE_TICKERS_LIST.join(', ')}`);
       setView("error");
       return;
     }
@@ -256,7 +249,7 @@ export default function App() {
                 value={ticker}
                 onChange={e => setTicker(e.target.value.toUpperCase().slice(0, 6))}
                 onKeyDown={e => { if (e.key === "Enter" && ticker.trim()) handleStart(); }}
-                placeholder={AVAILABLE_TICKERS.join(', ') + '...'}
+                placeholder={AVAILABLE_TICKERS_LIST.join(', ') + '...'}
                 maxLength={6}
                 autoComplete="off"
                 spellCheck={false}
@@ -273,7 +266,7 @@ export default function App() {
 
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginBottom: 24 }}>
               <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#6B7280", letterSpacing: 1, alignSelf: "center" }}>AVAILABLE:</span>
-              {AVAILABLE_TICKERS.map(t => (
+              {AVAILABLE_TICKERS_LIST.map(t => (
                 <button key={t} className="chip" onClick={() => quickRun(t)}
                   style={{ background: "#0E1325", border: "1px solid #2A3050", borderRadius: 20, padding: "6px 16px", fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#6B7280", cursor: "pointer", transition: "all .15s", letterSpacing: 1 }}>
                   {t}
